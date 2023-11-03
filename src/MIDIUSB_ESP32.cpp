@@ -100,25 +100,13 @@ MIDIUSB::MIDIUSB() {
     tinyusb_enable_interface(USB_INTERFACE_MIDI, TUSB_DESCRIPTOR_ITF_MIDI_LEN,
                              load_midi_descriptor);
     USB.onEvent(usbEventCallback);
-    /*
-        USB.VID(0x6666);
-        USB.PID(0x1234);
-        USB.productName("MIDI USB-BLE Bridge");
-        USB.manufacturerName("A.S Electroworks");
-        USB.serialNumber("0000");
-        USB.firmwareVersion(0x0000);
-        USB.usbVersion(0x0200);
-        USB.usbClass(TUSB_CLASS_UNSPECIFIED);
-        USB.usbSubClass(0x00);
-        USB.usbProtocol(0x00);
-        USB.usbAttributes(0x80);
-        USB.usbPower(100);
-        tinyusb_add_string_descriptor("MIDI USB-BLE Bridge");
-    */
-    USB.begin();
 }
 
 MIDIUSB::~MIDIUSB(){};
+
+void MIDIUSB::begin() {
+    USB.begin();
+}
 
 midiEventPacket_t MIDIUSB::read() {
     // The MIDI interface always creates input and output port/jack descriptors

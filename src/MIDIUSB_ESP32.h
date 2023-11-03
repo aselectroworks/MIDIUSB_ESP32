@@ -43,6 +43,7 @@ class MIDIUSB
     ~MIDIUSB();
 
     // MIDIUSB method
+    void begin(); 
     midiEventPacket_t read(); 
     void flush(void); 
     void sendMIDI(midiEventPacket_t event); 
