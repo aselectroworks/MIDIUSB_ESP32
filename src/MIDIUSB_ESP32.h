@@ -27,27 +27,27 @@
 #endif
 
 ESP_EVENT_DECLARE_BASE(ARDUINO_USB_MIDI_EVENTS);
-#define USB_MIDI_NUM_CABLES 3
+#include "midi_cable.h"
 #if (USB_MIDI_NUM_CABLES <= 0) || (USB_MIDI_NUM_CABLES > 3)
 #error "USB_MIDI_NUM_CABLES must be 1, 2 or 3"
 #endif
+
+__attribute__((weak)) void usbEventCallback(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 
 typedef enum {
     ARDUINO_USB_MIDI_ANY_EVENT = ESP_EVENT_ANY_ID,
 } arduino_usb_midi_event_t;
 
-class MIDIUSB
-{
+class MIDIUSB {
    public:
-    MIDIUSB(); 
+    MIDIUSB();
     ~MIDIUSB();
 
     // MIDIUSB method
-    void begin(); 
-    midiEventPacket_t read(); 
-    void flush(void); 
-    void sendMIDI(midiEventPacket_t event); 
-
+    void begin();
+    midiEventPacket_t read();
+    void flush(void);
+    void sendMIDI(midiEventPacket_t event);
 };
 
 extern MIDIUSB MidiUSB;
