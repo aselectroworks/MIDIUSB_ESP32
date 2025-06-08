@@ -1,7 +1,10 @@
+#include "MIDIUSB_ESP32.h"
+
+#if SOC_USB_OTG_SUPPORTED
 #include "USB.h"
 #if CONFIG_TINYUSB_MIDI_ENABLED
 
-#include "MIDIUSB_ESP32.h"
+#include "esp32-hal-tinyusb.h"
 
 // Interface counter
 enum interface_count {
@@ -27,6 +30,9 @@ enum usb_endpoints {
 #define TUSB_DESCRIPTOR_TOTAL_LEN (TUD_CONFIG_DESC_LEN + CFG_TUD_MIDI * TUSB_DESCRIPTOR_ITF_MIDI_LEN)
 
 ESP_EVENT_DEFINE_BASE(ARDUINO_USB_MIDI_EVENTS);
+esp_err_t arduino_usb_event_post(esp_event_base_t event_base, int32_t event_id, void *event_data, size_t event_data_size, TickType_t ticks_to_wait);
+esp_err_t arduino_usb_event_handler_register_with(esp_event_base_t event_base, int32_t event_id, esp_event_handler_t event_handler,
+                                                  void *event_handler_arg);
 
 MIDIUSB MidiUSB;
 
@@ -62,6 +68,9 @@ static uint16_t load_midi_descriptor(uint8_t *dst, uint8_t *itf)
     return TUSB_DESCRIPTOR_ITF_MIDI_LEN;
 }
 
+// Invoked when MIDI data is received
+void tud_midi_rx_cb(uint8_t itf) { arduino_usb_event_post(ARDUINO_USB_MIDI_EVENTS, ARDUINO_USB_MIDI_RX_EVENT, NULL, 0, portMAX_DELAY); }
+
 __attribute__((weak)) void usbEventCallback(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     if (event_base == ARDUINO_USB_EVENTS) {
@@ -93,9 +102,18 @@ __attribute__((weak)) void usbEventCallback(void *arg, esp_event_base_t event_ba
     }
 }
 
-MIDIUSB::MIDIUSB() { tinyusb_enable_interface(USB_INTERFACE_MIDI, TUSB_DESCRIPTOR_ITF_MIDI_LEN, load_midi_descriptor); }
+MIDIUSB::MIDIUSB()
+{
+    tinyusb_enable_interface(USB_INTERFACE_MIDI, TUSB_DESCRIPTOR_ITF_MIDI_LEN, load_midi_descriptor);
+}
 
 MIDIUSB::~MIDIUSB() {};
+
+void MIDIUSB::onEvent(esp_event_handler_t callback) { onEvent(ARDUINO_USB_MIDI_ANY_EVENT, callback); }
+void MIDIUSB::onEvent(arduino_usb_midi_event_t event, esp_event_handler_t callback)
+{
+    arduino_usb_event_handler_register_with(ARDUINO_USB_MIDI_EVENTS, event, callback, this);
+}
 
 void MIDIUSB::begin() {}
 
@@ -115,3 +133,4 @@ void MIDIUSB::flush(void) {}
 void MIDIUSB::sendMIDI(midiEventPacket_t event) { tud_midi_packet_write((uint8_t *)&event); }
 
 #endif /* CONFIG_TINYUSB_MIDI_ENABLED */
+#endif /* SOC_USB_OTG_SUPPORTED */

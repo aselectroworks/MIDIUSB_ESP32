@@ -34,6 +34,9 @@ void setup()
     HWSerial.printf("Setup Finished\r\n");
 
     USB.onEvent(usbEventCallback);
+    MidiUSB.onEvent(usbEventCallback);
+
+    MidiUSB.begin();
     USB.begin();
 }
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "soc/soc_caps.h"
+#if SOC_USB_OTG_SUPPORTED
+
 #include "sdkconfig.h"
 #if CONFIG_TINYUSB_MIDI_ENABLED
 
@@ -17,7 +20,6 @@
 
 #include "HardwareSerial.h"
 #include "HWCDC.h"
-#include "esp32-hal-tinyusb.h"
 
 #if ARDUINO_USB_CDC_ON_BOOT
 #define HWSerial Serial0
@@ -36,12 +38,17 @@ __attribute__((weak)) void usbEventCallback(void *arg, esp_event_base_t event_ba
 
 typedef enum {
     ARDUINO_USB_MIDI_ANY_EVENT = ESP_EVENT_ANY_ID,
+    ARDUINO_USB_MIDI_RX_EVENT = 0,
+    ARDUINO_USB_MIDI_EVENT_MAX
 } arduino_usb_midi_event_t;
 
 class MIDIUSB {
    public:
     MIDIUSB();
     ~MIDIUSB();
+
+    void onEvent(esp_event_handler_t callback);
+    void onEvent(arduino_usb_midi_event_t event, esp_event_handler_t callback);
 
     // MIDIUSB method
     void begin();
@@ -53,3 +60,4 @@ class MIDIUSB {
 extern MIDIUSB MidiUSB;
 
 #endif /* CONFIG_TINYUSB_MIDI_ENABLED */
+#endif /* SOC_USB_OTG_SUPPORTED */

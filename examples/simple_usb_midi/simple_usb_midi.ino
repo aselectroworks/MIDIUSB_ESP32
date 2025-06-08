@@ -30,6 +30,7 @@ void setup()
     */
 
     USB.onEvent(usbEventCallback);
+    MidiUSB.onEvent(usbEventCallback);
     MidiUSB.begin();
     USB.begin();
 }

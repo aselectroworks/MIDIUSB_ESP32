@@ -73,7 +73,7 @@ void usbEventCallback(void *arg, esp_event_base_t event_base, int32_t event_id, 
         midiEventPacket_t *data = (midiEventPacket_t *)event_data;
         switch (event_id) {
             default:
-                HWSerial.printf("MIDI EVENT:  ID=%d, DATA=%d\r\n", event_id, (uint32_t)data);
+                Serial.printf("MIDI EVENT:  ID=%d, DATA=%d\r\n", event_id, (uint32_t)data);
                 break;
         }
     }
@@ -102,10 +102,10 @@ void setup()
 
     USB.onEvent(usbEventCallback);
     USBSerial.onEvent(usbEventCallback);
+    MidiUSB.onEvent(usbEventCallback);
 
     MidiUSB.begin();
     USBSerial.begin();
-
     USB.begin();
 }
 
