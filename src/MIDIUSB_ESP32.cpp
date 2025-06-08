@@ -4,8 +4,6 @@
 #include "USB.h"
 #if CONFIG_TINYUSB_MIDI_ENABLED
 
-#include "esp32-hal-tinyusb.h"
-
 // Interface counter
 enum interface_count {
 #if CFG_TUD_MIDI

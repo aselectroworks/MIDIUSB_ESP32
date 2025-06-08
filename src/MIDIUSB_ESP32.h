@@ -15,6 +15,7 @@
 #include "Stream.h"
 
 #include "USB.h"
+#include "esp32-hal-tinyusb.h"
 
 #include "MIDIUSB_Defs.h"
 
